@@ -43,8 +43,10 @@ bash reproduce.sh
 - runs the 19 tests;
 - executes the notebook in place: every pipeline step, all 480 LFR fits (3 datasets × 5 seeds × 32), and `results/`.
 
-The saved run took 50 minutes on an M1 Pro with 6 parallel processes. Each of the five Adult tasks
-(32 LFR fits on 25k rows) takes about 49 minutes; German and COMPAS take under a minute per seed.
+The saved experiments took 50 minutes on an M1 Pro with 6 parallel processes. Each of the five Adult
+tasks (32 LFR fits on 25k rows) takes about 49 minutes; German and COMPAS take under a minute per seed.
+A complete `bash reproduce.sh` in a fresh copy took 1 h 24 min on the same machine and reproduced every
+saved result exactly, except running times.
 
 Options:
 
