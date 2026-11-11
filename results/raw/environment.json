@@ -1,0 +1,27 @@
+{
+  "python": "3.12.15",
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "machine": "arm64",
+  "processor": "arm",
+  "cpu_count": 8,
+  "aif360": "0.6.1",
+  "numpy": "2.5.4",
+  "pandas": "2.3.3",
+  "scipy": "1.17.1",
+  "scikit-learn": "1.9.1",
+  "workers": 6,
+  "wall_seconds": 2968.3,
+  "quick": false,
+  "datasets": [
+    "adult",
+    "german",
+    "compas"
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ]
+}
