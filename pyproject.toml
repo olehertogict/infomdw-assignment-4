@@ -22,6 +22,7 @@ dev = [
     "nbconvert>=7.17",
     "nbformat>=5.11",
     "pymupdf>=2.1",
+    "markdown>=3.11.3",
 ]
 
 [tool.pytest.ini_options]
