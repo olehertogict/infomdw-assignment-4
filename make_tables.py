@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-import experiment as E
+import run_experiments as E
 
 ROOT = Path(__file__).resolve().parent
 RAW = ROOT / "results" / "raw"

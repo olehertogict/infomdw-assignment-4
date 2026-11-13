@@ -3,6 +3,8 @@ __pycache__/
 .pytest_cache/
 .ipynb_checkpoints/
 .DS_Store
-# Downloaded datasets (fetched and checked by download_data.py)
+# Downloaded datasets (fetched and checked by datasets.py)
 data/
 logs/
+# Per-task copies of results/raw/runs.csv, written while the experiments run
+results/raw/runs/

@@ -1,24 +1,22 @@
-"""The complete mitigation pipeline and the experiment grid.
+"""The mitigation pipeline, the fairness measures and all runs -> results/raw/.
 
-Per dataset and seed:
-  1. stratified split (strata = label x protected group): 70% train / 30% test; the train part
-     is split again, stratified, into 80% fit / 20% validation (Zemel et al. select
-     hyper-parameters on a validation set);
-  2. z-scoring fitted on the fit part (LFR input, logistic regression input, consistency kNN);
-  3. baseline: logistic regression on the original fit data;
-  4. LFR (pre-processing) for every grid setting, fitted on the fit part only, giving two
-     pipelines on the held-out data:
-       "LFR classifier"        the model's own prediction y_hat = sum_k M_nk w_k > 0.5
-                               (what Zemel et al. evaluate; AIF360's transformed labels);
-       "LR on LFR repr."       logistic regression trained on the LFR-transformed fit data
-                               (AIF360's transformed features x_hat) with the original labels,
-                               applied to the LFR-transformed test data;
-  5. hyper-parameters selected on the validation set with the paper's two criteria
-     (maximum Delta = yAcc - yDiscrim, and minimum yDiscrim);
-  6. AIF360's unchanged LFR.fit, refitted with the selected setting and with AIF360's
-     default setting, to show the effect of its finite-difference optimisation.
-All measures are reported on validation and test predictions; the tables use the test part.
+Per dataset and seed: a stratified 70/30 split (strata = label x protected group; the train part is
+split again 80/20 into fit/validation), z-scoring on the fit part, a logistic-regression baseline,
+and LFR for each of the paper's 30 grid settings with two final classifiers on the held-out data
+(LFR's own prediction, and logistic regression on the LFR-transformed data). The setting is chosen
+on the validation set with the paper's criteria; AIF360's unchanged LFR.fit is run for comparison.
+
+Measures (AIF360 BinaryLabelDatasetMetric, on the labels or predictions being assessed):
+  DP_diff     = P(y=1 | unprivileged) - P(y=1 | privileged)    (0 = parity)
+  DIR         = P(y=1 | unprivileged) / P(y=1 | privileged)    (1 = parity)
+  consistency = 1 - mean_n |y_n - mean of y over the 5 nearest rows|, on z-scored features
+                (AIF360 counts each row as one of its own 5 neighbours; the raw-feature value is
+                saved as consistency_raw)
+plus accuracy and balanced accuracy.
+
+Run: uv run python run_experiments.py      (REPRODUCE_QUICK=1: one seed, three settings)
 """
+
 import json
 import logging
 import os
@@ -29,9 +27,11 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from sklearn.metrics import accuracy_score, balanced_accuracy_score
 
 # AIF360 logs a warning for every optional algorithm it cannot import, in every worker process.
 logging.getLogger().setLevel(logging.ERROR)
+from aif360.metrics import BinaryLabelDatasetMetric  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
 RAW_DIR = ROOT / "results" / "raw"
@@ -54,6 +54,54 @@ LFR_LR = "LR on LFR repr."
 QUICK = {"seeds": [0], "ay": [1], "az": [0, 1, 10]}   # smoke-test grid (REPRODUCE_QUICK=1)
 
 
+K_NEIGHBOURS = 5
+
+
+def _with_labels(dataset, labels, features=None):
+    d = dataset.copy(deepcopy=True)
+    d.labels = np.asarray(labels, dtype=float).reshape(-1, 1)
+    if features is not None:
+        d.features = np.asarray(features, dtype=float)
+    return d
+
+
+def _metric(dataset, pa):
+    return BinaryLabelDatasetMetric(dataset, unprivileged_groups=[{pa: 0.0}], privileged_groups=[{pa: 1.0}])
+
+
+def fairness(dataset, pa, labels, scaled_features):
+    """DP_diff, DIR and consistency of ``labels`` (0/1, aligned with the rows of ``dataset``)."""
+    m = _metric(_with_labels(dataset, labels, scaled_features), pa)
+    m_raw = _metric(_with_labels(dataset, labels), pa)
+    s = dataset.protected_attributes[:, dataset.protected_attribute_names.index(pa)]
+    labels = np.asarray(labels, dtype=float).ravel()
+    with np.errstate(divide="ignore", invalid="ignore"):
+        dir_ = m.disparate_impact()
+    return {
+        "DP_diff": float(m.statistical_parity_difference()),
+        "DIR": float(dir_) if np.isfinite(dir_) else float("nan"),
+        "consistency": float(np.ravel(m.consistency(n_neighbors=K_NEIGHBOURS))[0]),
+        "consistency_raw": float(np.ravel(m_raw.consistency(n_neighbors=K_NEIGHBOURS))[0]),
+        "pos_rate": float(labels.mean()),
+        "pos_rate_unpriv": float(labels[s == 0].mean()),
+        "pos_rate_priv": float(labels[s == 1].mean()),
+    }
+
+
+def performance(y_true, y_pred):
+    y_true, y_pred = np.ravel(y_true), np.ravel(y_pred)
+    return {"accuracy": float(accuracy_score(y_true, y_pred)),
+            "balanced_accuracy": float(balanced_accuracy_score(y_true, y_pred))}
+
+
+def paper_selection_scores(y_true, y_pred, s):
+    """Zemel et al. section 4.2: yAcc, yDiscrim = |P(y=1|s=1) - P(y=1|s=0)| and Delta = yAcc - yDiscrim."""
+    y_true, y_pred, s = np.ravel(y_true), np.ravel(y_pred), np.ravel(s)
+    acc = float(np.mean(y_true == y_pred))
+    disc = float(abs(y_pred[s == 1].mean() - y_pred[s == 0].mean()))
+    return {"yAcc": acc, "yDiscrim": disc, "Delta": acc - disc}
+
+
 def split(dataset, seed):
     from sklearn.model_selection import train_test_split
     y = dataset.labels.ravel().astype(int)
@@ -72,7 +120,6 @@ def _scaled_copy(dataset, scaler):
 
 
 def _evaluate(part_ds, pa, scaled_features, y_pred):
-    from metrics import fairness, paper_selection_scores, performance
     s = part_ds.protected_attributes[:, part_ds.protected_attribute_names.index(pa)]
     return {**fairness(part_ds, pa, y_pred, scaled_features), **performance(part_ds.labels, y_pred),
             **paper_selection_scores(part_ds.labels, y_pred, s)}
@@ -175,7 +222,6 @@ def _task(args):
 def label_metrics():
     """Measures of the original labels on the complete datasets, before any split or model."""
     from sklearn.preprocessing import StandardScaler
-    from metrics import fairness
     import datasets
     rows = []
     for name in datasets.DATASETS:

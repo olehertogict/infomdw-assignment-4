@@ -11,7 +11,7 @@ Two ways to fit the same model are used:
 * ``ExactGradientLFR``: a subclass of AIF360's ``LFR`` whose ``fit`` minimises the identical
   objective (``aif360...lfr_helpers.LFR_optim_objective``) with the identical initialisation,
   bounds and limits, but passes the analytic gradient below to L-BFGS-B. ``transform`` is
-  AIF360's, unchanged. tests/test_lfr.py checks that the objective equals AIF360's and that the
+  AIF360's, unchanged. tests/test_reproduction.py checks that the objective equals AIF360's and that the
   gradient matches finite differences.
 
 AIF360 objective (with u = unprivileged, p = privileged group; M = softmax(-||x - v_k||_2);
