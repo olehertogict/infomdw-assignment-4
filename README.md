@@ -5,12 +5,12 @@ Evaluation of the bias-mitigation algorithm of
 > R. Zemel, Y. Wu, K. Swersky, T. Pitassi and C. Dwork. *Learning Fair Representations.* ICML 2013,
 > PMLR 28(3):325–333. [paper](https://proceedings.mlr.press/v28/zemel13.html) ·
 > [PDF](https://proceedings.mlr.press/v28/zemel13.pdf) ·
-> [AIF360 implementation](https://github.com/Trusted-AI/AIF360) · [our fork](https://github.com/olehertogict/AIF360)
+> [AIF360 implementation](https://github.com/Trusted-AI/AIF360) · [fork used here](https://github.com/olehertogict/AIF360)
 
 Assignment: [Assignment 4](https://hqahtan.github.io/Teaching/infomdw/assignments/Assignment_4_26_27.html).
 
 LFR is AIF360 0.6.1's pre-processing algorithm `aif360.algorithms.preprocessing.LFR`. AIF360 is installed from
-our fork [olehertogict/AIF360](https://github.com/olehertogict/AIF360), included as the git submodule
+the fork [olehertogict/AIF360](https://github.com/olehertogict/AIF360), included as the git submodule
 `external/AIF360`. Its branch `infomdw-a4` is release `v0.6.1` with
 [instructions](https://github.com/olehertogict/AIF360/blob/infomdw-a4/INFOMDW_A4.md) added; the code is unchanged
 and byte-identical to the PyPI wheel 0.6.1. Exact package versions are in `uv.lock`. The notebook [`fairness_lfr.ipynb`](fairness_lfr.ipynb)
@@ -127,7 +127,7 @@ With exact gradients, LFR brings |DP_diff| below 0.03 and DIR above 0.95 on all 
 ```
 datasets.py          datasets: download, SHA256 check, AIF360 construction
 lfr.py               AIF360's LFR: unchanged fit (with SciPy's report) and ExactGradientLFR
-external/AIF360      AIF360 v0.6.1, our fork with instructions (git submodule; code unchanged)
+external/AIF360      AIF360 v0.6.1, fork with instructions (git submodule; code unchanged)
 run_experiments.py   pipeline, measures, grid, model selection, all runs -> results/raw/
 make_tables.py       results/raw/ -> results/results.md, summary.csv, tradeoff.png
 fairness_lfr.ipynb   the notebook: the pipeline step by step and all runs, with outputs
