@@ -48,8 +48,9 @@ bash reproduce.sh
 - executes the notebook, which runs all 480 LFR fits and writes `results/`.
 
 The saved experiments took about 50 minutes on an M1 Pro with 6 parallel processes. A complete
-`reproduce.sh` from a fresh copy took 1 h 24 min and reproduced every saved value except running times.
-A rerun overwrites `results/`.
+`reproduce.sh` from a fresh clone, with AIF360 built from the fork (commit `0ca9251`), took 49 minutes and
+reproduced every saved value exactly: all 1,980 rows of `results/raw/runs.csv`, the original-label measures and
+`results/summary.csv`. Only the running times differ. A rerun overwrites `results/`.
 
 For a quick check, run `REPRODUCE_QUICK=1 bash reproduce.sh` (one seed, three settings, a few minutes)
 or `uv run --locked pytest -q`.
