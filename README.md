@@ -24,7 +24,7 @@ runs the pipeline on Adult, German and COMPAS:
 AIF360's `LFR.fit` approximates every gradient by finite differences, and its evaluation limit
 (`maxfun=5000`) counts those evaluations. L-BFGS therefore stops after 4–30 iterations, and the model mostly
 predicts a single class. `lfr.ExactGradientLFR` minimises the same objective with its analytic gradient.
-Both versions are reported. The saved experiments and the report use
+Both versions are reported. The saved results in `results/` were produced at
 [commit `cb171c2`](https://github.com/olehertogict/infomdw-assignment-4/tree/cb171c2f97bbcac0f452d866dbe089f1990a90cc).
 Later commits restructure files and documentation and install the same AIF360 code from the fork; they do not
 change the computations or the saved results.
