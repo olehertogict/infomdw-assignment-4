@@ -4,8 +4,9 @@ version = "0.1.0"
 description = "Evaluation of Learning Fair Representations (Zemel et al., ICML 2013) on Adult, German and COMPAS"
 requires-python = "==3.12.*"
 dependencies = [
-    # AIF360 0.6.1 (latest release) breaks on pandas 3 (default string dtype) and its LFR
-    # passes `disp` to fmin_l_bfgs_b, which SciPy 1.18 removed.
+    # AIF360 0.6.1 (latest release), built from the fork in external/AIF360 (release code,
+    # unchanged). It breaks on pandas 3 (default string dtype) and its LFR passes `disp` to
+    # fmin_l_bfgs_b, which SciPy 1.18 removed.
     "aif360==0.6.1",
     "pandas>=2.3,<3",
     "scipy>=1.17,<1.18",
@@ -26,3 +27,7 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 filterwarnings = ["ignore::SyntaxWarning", "ignore::DeprecationWarning"]
+
+[tool.uv.sources]
+# Fork of Trusted-AI/AIF360 at release v0.6.1 with instructions added (git submodule).
+aif360 = { path = "external/AIF360" }

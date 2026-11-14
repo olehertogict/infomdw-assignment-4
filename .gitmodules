@@ -1,0 +1,4 @@
+[submodule "external/AIF360"]
+	path = external/AIF360
+	url = https://github.com/olehertogict/AIF360.git
+	branch = infomdw-a4

@@ -5,7 +5,7 @@ requires-python = "==3.12.*"
 [[package]]
 name = "aif360"
 version = "0.6.1"
-source = { registry = "https://pypi.org/simple" }
+source = { directory = "external/AIF360" }
 dependencies = [
     { name = "matplotlib" },
     { name = "numpy" },
@@ -13,10 +13,85 @@ dependencies = [
     { name = "scikit-learn" },
     { name = "scipy" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/fa/bb/d96f06e8c461e11d3a6f68d9141cbca484708c457c8e36987a7c3048335f/aif360-0.6.1.tar.gz", hash = "sha256:635afc0bbe785e08fa242eee5e5080238193d0583bc0f5006a132050d4fb77f2", size = 2003486, upload-time = "2024-04-08T20:03:18.11Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/61/7b/7e4fa9e7b6f62759663db3b5aaa12a6cc9ef866223e5978c25844bceb762/aif360-0.6.1-py3-none-any.whl", hash = "sha256:2bae0f7ba95c4902f551df33c7603c3be0319442a96b35ad99199a7d62093217", size = 259720, upload-time = "2024-04-08T20:03:12.953Z" },
+
+[package.metadata]
+requires-dist = [
+    { name = "adversarial-robustness-toolbox", marker = "extra == 'all'", specifier = ">=1.0.0" },
+    { name = "adversarial-robustness-toolbox", marker = "extra == 'art'", specifier = ">=1.0.0" },
+    { name = "adversarial-robustness-toolbox", marker = "extra == 'tests'", specifier = ">=1.0.0" },
+    { name = "blackboxauditing", marker = "extra == 'all'" },
+    { name = "blackboxauditing", marker = "extra == 'disparateimpactremover'" },
+    { name = "blackboxauditing", marker = "extra == 'tests'" },
+    { name = "colorama", marker = "extra == 'all'" },
+    { name = "colorama", marker = "extra == 'facts'" },
+    { name = "colorama", marker = "extra == 'tests'" },
+    { name = "cvxpy", marker = "extra == 'all'", specifier = ">=1.0" },
+    { name = "cvxpy", marker = "extra == 'optimpreproc'", specifier = ">=1.0" },
+    { name = "cvxpy", marker = "extra == 'tests'", specifier = ">=1.0" },
+    { name = "fairlearn", marker = "extra == 'all'", specifier = "~=0.7" },
+    { name = "fairlearn", marker = "extra == 'docs'", specifier = "~=0.7" },
+    { name = "fairlearn", marker = "extra == 'reductions'", specifier = "~=0.7" },
+    { name = "fairlearn", marker = "extra == 'tests'", specifier = "~=0.7" },
+    { name = "igraph", extras = ["plotting"], marker = "extra == 'all'" },
+    { name = "igraph", extras = ["plotting"], marker = "extra == 'notebooks'" },
+    { name = "igraph", extras = ["plotting"], marker = "extra == 'tests'" },
+    { name = "infairness", marker = "extra == 'all'", specifier = ">=0.2.2" },
+    { name = "infairness", marker = "extra == 'infairness'", specifier = ">=0.2.2" },
+    { name = "infairness", marker = "extra == 'tests'", specifier = ">=0.2.2" },
+    { name = "ipympl", marker = "extra == 'all'" },
+    { name = "ipympl", marker = "extra == 'notebooks'" },
+    { name = "ipympl", marker = "extra == 'tests'" },
+    { name = "jinja2", marker = "extra == 'all'", specifier = ">3.1.0" },
+    { name = "jinja2", marker = "extra == 'docs'", specifier = ">3.1.0" },
+    { name = "jupyter", marker = "extra == 'all'" },
+    { name = "jupyter", marker = "extra == 'notebooks'" },
+    { name = "jupyter", marker = "extra == 'tests'" },
+    { name = "lightgbm", marker = "extra == 'all'" },
+    { name = "lightgbm", marker = "extra == 'notebooks'" },
+    { name = "lightgbm", marker = "extra == 'tests'" },
+    { name = "lime", marker = "extra == 'all'" },
+    { name = "lime", marker = "extra == 'lime'" },
+    { name = "lime", marker = "extra == 'tests'" },
+    { name = "matplotlib" },
+    { name = "mlxtend", marker = "extra == 'all'" },
+    { name = "mlxtend", marker = "extra == 'facts'" },
+    { name = "mlxtend", marker = "extra == 'tests'" },
+    { name = "numpy", specifier = ">=1.16" },
+    { name = "pandas", specifier = ">=0.24.0" },
+    { name = "pot", marker = "extra == 'all'" },
+    { name = "pot", marker = "extra == 'optimaltransport'" },
+    { name = "pot", marker = "extra == 'tests'" },
+    { name = "pytest", marker = "extra == 'all'", specifier = ">=3.5" },
+    { name = "pytest", marker = "extra == 'tests'", specifier = ">=3.5" },
+    { name = "pytest-cov", marker = "extra == 'all'", specifier = ">=2.8.1" },
+    { name = "pytest-cov", marker = "extra == 'tests'", specifier = ">=2.8.1" },
+    { name = "rpy2", marker = "extra == 'all'" },
+    { name = "rpy2", marker = "extra == 'fairadapt'" },
+    { name = "rpy2", marker = "extra == 'tests'" },
+    { name = "scikit-learn", specifier = ">=1.0" },
+    { name = "scipy", specifier = ">=1.2.0" },
+    { name = "seaborn", marker = "extra == 'all'" },
+    { name = "seaborn", marker = "extra == 'notebooks'" },
+    { name = "seaborn", marker = "extra == 'tests'" },
+    { name = "skorch", marker = "extra == 'all'" },
+    { name = "skorch", marker = "extra == 'infairness'" },
+    { name = "skorch", marker = "extra == 'tests'" },
+    { name = "sphinx", marker = "extra == 'all'" },
+    { name = "sphinx", marker = "extra == 'docs'" },
+    { name = "sphinx-rtd-theme", marker = "extra == 'all'" },
+    { name = "sphinx-rtd-theme", marker = "extra == 'docs'" },
+    { name = "tensorflow", marker = "extra == 'adversarialdebiasing'", specifier = ">=1.13.1" },
+    { name = "tensorflow", marker = "extra == 'all'", specifier = ">=1.13.1" },
+    { name = "tensorflow", marker = "extra == 'tests'", specifier = ">=1.13.1" },
+    { name = "torch", marker = "extra == 'all'" },
+    { name = "torch", marker = "extra == 'lfr'" },
+    { name = "torch", marker = "extra == 'tests'" },
+    { name = "tqdm", marker = "extra == 'all'" },
+    { name = "tqdm", marker = "extra == 'facts'" },
+    { name = "tqdm", marker = "extra == 'notebooks'" },
+    { name = "tqdm", marker = "extra == 'tests'" },
 ]
+provides-extras = ["optimpreproc", "adversarialdebiasing", "disparateimpactremover", "lfr", "lime", "art", "reductions", "fairadapt", "infairness", "notebooks", "optimaltransport", "facts", "tests", "docs", "all"]
 
 [[package]]
 name = "appnope"
@@ -238,7 +313,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "aif360", specifier = "==0.6.1" },
+    { name = "aif360", directory = "external/AIF360" },
     { name = "matplotlib", specifier = ">=3.10" },
     { name = "numpy", specifier = ">=2.4" },
     { name = "pandas", specifier = ">=2.3,<3" },

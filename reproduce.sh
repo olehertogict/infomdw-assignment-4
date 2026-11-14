@@ -6,13 +6,17 @@
 set -euo pipefail
 cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 
-for tool in uv; do
+for tool in uv git; do
     if ! command -v "$tool" >/dev/null 2>&1; then
         printf 'Missing required tool: %s. See README.md for installation requirements.\n' "$tool" >&2
         exit 1
     fi
 done
 
+# AIF360 is built from the fork in external/AIF360 (git submodule; release v0.6.1, code unchanged).
+if [ ! -f external/AIF360/setup.py ]; then
+    git submodule update --init external/AIF360
+fi
 uv sync --locked
 # Downloads the three datasets on first use and checks their SHA256 hashes.
 uv run --locked python -W ignore datasets.py
