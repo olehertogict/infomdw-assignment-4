@@ -1,0 +1,3 @@
+# Script line endings for every platform (Git for Windows checks out text files with CRLF by default).
+*.sh  text eol=lf
+*.cmd text eol=crlf

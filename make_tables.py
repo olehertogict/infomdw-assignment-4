@@ -132,10 +132,10 @@ def tradeoff_figure(runs, sel, path):
 
 def main():
     runs, labels = load()
-    env = json.loads((RAW / "environment.json").read_text())
+    env = json.loads((RAW / "environment.json").read_text(encoding="utf-8"))
     sel = selected_rows(runs)
     summ = summary(sel)
-    summ.to_csv(OUT / "summary.csv", index=False)
+    summ.to_csv(OUT / "summary.csv", index=False, lineterminator="\n")
     tradeoff_figure(runs, sel, OUT / "tradeoff.png")
 
     md = ["# Results", "",
@@ -217,7 +217,7 @@ def main():
     md += [md_table(["dataset", "pipeline", "degenerate fits", "by Az (over Ay and seeds)"], rows), ""]
 
     md += ["## Environment", "", "```", json.dumps(env, indent=2), "```", ""]
-    (OUT / "results.md").write_text("\n".join(md))
+    (OUT / "results.md").write_text("\n".join(md), encoding="utf-8", newline="\n")
     print("wrote results/results.md, results/summary.csv and results/tradeoff.png")
 
 

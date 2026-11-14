@@ -215,7 +215,7 @@ def _task(args):
     name, seed, quick, out = args
     t0 = time.perf_counter()
     df = run_seed(name, seed, quick)
-    df.to_csv(out, index=False)
+    df.to_csv(out, index=False, lineterminator="\n")
     return name, seed, time.perf_counter() - t0
 
 
@@ -253,7 +253,7 @@ def run_all(datasets_=None, seeds=None, quick=False, workers=None, out_dir=RAW_D
     (out_dir / "runs").mkdir(parents=True, exist_ok=True)
     for name in datasets_:
         datasets.download(name)
-    label_metrics().to_csv(out_dir / "label_metrics.csv", index=False)
+    label_metrics().to_csv(out_dir / "label_metrics.csv", index=False, lineterminator="\n")
     tasks = []
     for name in datasets_:
         for seed in seeds:
@@ -273,13 +273,13 @@ def run_all(datasets_=None, seeds=None, quick=False, workers=None, out_dir=RAW_D
                 log(f"{name} seed {seed}: {seconds:.0f} s")
     runs = pd.concat([pd.read_csv(out_dir / "runs" / f"{n}_seed{s}.csv") for n in datasets_ for s in seeds],
                      ignore_index=True)
-    runs.to_csv(out_dir / "runs.csv", index=False)
+    runs.to_csv(out_dir / "runs.csv", index=False, lineterminator="\n")
     env_path = out_dir / "environment.json"
     if tasks or not env_path.exists():   # a fully reused run keeps the record of the run that made the files
         env = environment() | {"workers": workers, "wall_seconds": round(time.perf_counter() - t0, 1),
                                "tasks_run": len(tasks), "quick": quick, "datasets": list(datasets_),
                                "seeds": list(seeds)}
-        env_path.write_text(json.dumps(env, indent=2) + "\n")
+        env_path.write_text(json.dumps(env, indent=2) + "\n", encoding="utf-8", newline="\n")
     return runs
 
 

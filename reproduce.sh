@@ -3,6 +3,7 @@
 #   bash reproduce.sh                      full run (5 seeds x 30 LFR settings x 3 datasets)
 #   REPRODUCE_QUICK=1 bash reproduce.sh    smoke test: 1 seed, 3 settings (writes results/ too)
 #   REPRODUCE_WORKERS=4 bash reproduce.sh  number of parallel processes (default: CPU count - 2)
+# Windows: reproduce.cmd (PowerShell or Command Prompt) does the same.
 set -euo pipefail
 cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 
