@@ -1,0 +1,80 @@
+name: windows-check
+on:
+  push:
+    branches: [windows-check]
+jobs:
+  quick:
+    runs-on: windows-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.3"
+          enable-cache: false
+      - name: Environment
+        shell: pwsh
+        run: |
+          git config --show-origin --get core.autocrlf
+          git ls-files --eol reproduce.cmd reproduce.sh
+          [System.Environment]::OSVersion.VersionString
+          Get-CimInstance Win32_Processor | Select-Object Name, NumberOfLogicalProcessors
+      - name: Quick run with reproduce.cmd (PowerShell, clone without submodule)
+        shell: pwsh
+        env:
+          REPRODUCE_QUICK: "1"
+        run: .\reproduce.cmd
+      - name: Output line endings
+        shell: pwsh
+        run: |
+          uv run --locked python -c "import pathlib; [print(p, b'\r' in p.read_bytes()) for p in map(pathlib.Path, ['results/raw/runs.csv','results/raw/label_metrics.csv','results/raw/environment.json','results/summary.csv','results/results.md'])]"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: quick-reproduce-cmd
+          path: |
+            results/
+            fairness_lfr.ipynb
+      - name: Manual fallback commands (Command Prompt)
+        shell: cmd
+        env:
+          REPRODUCE_QUICK: "1"
+        run: |
+          git submodule update --init || exit /b 1
+          uv sync --locked || exit /b 1
+          uv run --locked python -X utf8 -W ignore datasets.py || exit /b 1
+          uv run --locked python -X utf8 -m pytest -q || exit /b 1
+          uv run --locked python -c "import shutil; shutil.rmtree('results/raw/runs', ignore_errors=True)" || exit /b 1
+          uv run --locked python -X utf8 -m nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=-1 fairness_lfr.ipynb || exit /b 1
+      - name: Manual fallback commands (PowerShell, tests only)
+        shell: pwsh
+        run: |
+          uv run --locked python -X utf8 -m pytest -q
+      - uses: actions/upload-artifact@v4
+        with:
+          name: quick-fallback
+          path: |
+            results/
+            fairness_lfr.ipynb
+  full:
+    runs-on: windows-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.3"
+          enable-cache: false
+      - name: Full run with reproduce.cmd (PowerShell)
+        shell: pwsh
+        env:
+          REPRODUCE_WORKERS: "4"
+        run: .\reproduce.cmd
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: full-reproduce-cmd
+          path: |
+            results/
+            fairness_lfr.ipynb
